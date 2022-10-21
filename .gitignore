@@ -1,0 +1,8 @@
+/data
+/models/cifar/__pycache__/
+/third_party/ResNeXt_DenseNet/__pycache__/
+/third_party/ResNeXt_DenseNet/models/__pycache__/
+/third_party/WideResNet_pytorch/__pycache__/
+/third_party/__pycache__/
+/__pycache__/
+asho

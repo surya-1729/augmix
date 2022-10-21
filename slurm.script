@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --job-name=torch-test    # create a short name for your job
+#SBATCH --time=01:10:00
+#SBATCH --nodes=1                # node count
+#SBATCH --cpus-per-task=1        # cpu-cores per task (>1 if multi-threaded tasks)
+#SBATCH --ntasks-per-node=2
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:4
+
+source ~/.bashrc
+conda deactivate
+conda activate dl21
+
+python cifar.py --epochs 51

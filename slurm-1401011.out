@@ -1,0 +1,51 @@
+/home/g051304/.conda/envs/dl21/lib/python3.10/site-packages/torch/utils/data/dataloader.py:563: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+Files already downloaded and verified
+Files already downloaded and verified
+Beginning training from epoch: 1
+Train Loss 0.236
+Train Loss 1.989
+Train Loss 1.830
+Train Loss 1.687
+Train Loss 1.576
+Train Loss 1.467
+Train Loss 1.412
+Train Loss 1.313
+Epoch   1 | Time   117 | Train Loss 1.2710 | Test Loss 0.001 | Test Error 37.49
+Train Loss 0.113
+Train Loss 1.213
+Train Loss 1.177
+Train Loss 1.112
+Train Loss 1.069
+Train Loss 1.067
+Train Loss 1.044
+Train Loss 1.036
+Epoch   2 | Time    97 | Train Loss 1.0041 | Test Loss 0.001 | Test Error 29.11
+Train Loss 0.113
+Train Loss 1.007
+Train Loss 0.996
+Train Loss 0.960
+Train Loss 0.929
+Train Loss 0.935
+Train Loss 0.918
+Train Loss 0.915
+Epoch   3 | Time    97 | Train Loss 0.8722 | Test Loss 0.001 | Test Error 26.00
+Train Loss 0.079
+Train Loss 0.871
+Train Loss 0.856
+Train Loss 0.858
+Train Loss 0.802
+Train Loss 0.832
+Train Loss 0.805
+Train Loss 0.814
+Epoch   4 | Time    96 | Train Loss 0.7993 | Test Loss 0.001 | Test Error 24.32
+Train Loss 0.074
+Train Loss 0.765
+Train Loss 0.753
+Train Loss 0.772
+Train Loss 0.761
+Train Loss 0.789
+Train Loss 0.754
+Train Loss 0.679
+Epoch   5 | Time    97 | Train Loss 0.7180 | Test Loss 0.001 | Test Error 21.08
+slurmstepd: error: *** JOB 1401011 ON gpu-node004 CANCELLED AT 2022-10-21T14:17:58 DUE TO TIME LIMIT ***
