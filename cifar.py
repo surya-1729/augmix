@@ -28,6 +28,7 @@ import shutil
 import time
 
 from models.cifar.allconv import AllConvNet
+import torchvision.models as model
 import numpy as np
 import augmentations
 from third_party.ResNeXt_DenseNet.models.densenet import densenet
@@ -54,7 +55,7 @@ parser.add_argument(
     '-m',
     type=str,
     default='wrn',
-    choices=['wrn', 'allconv', 'densenet', 'resnext'],
+    choices=['wrn', 'allconv', 'densenet', 'resnext', 'resnet18_pretrained', 'resnet18_notpretrained', 'convnext_tiny_pretrained', 'convnext_tiny_notpretrained'],
     help='Choose architecture.')
 # Optimization options
 parser.add_argument(
@@ -338,6 +339,18 @@ def main():
     net = AllConvNet(num_classes)
   elif args.model == 'resnext':
     net = resnext29(num_classes=num_classes)
+  elif args.model == 'resnet18_pretrained':
+    net = model.resnet18(pretrained = True)
+    net.fc = torch.nn.Linear(in_features=512, out_features=10, bias=True)
+  elif args.model == 'resnet18_notpretrained':
+    net = model.resnet18(pretrained = False)
+    net.fc = torch.nn.Linear(in_features=512, out_features=10, bias=True)
+  elif args.model == 'convnext_tiny_pretrained':
+    net = model.convnext_tiny(pretrained = True)
+    net.classifier[2] = torch.nn.Linear(in_features=768, out_features=10, bias=True)  
+  elif args.model == 'convnext_tiny_notpretrained':
+    net = model.convnext_tiny(pretrained = False)  
+    net.classifier[2] = torch.nn.Linear(in_features=768, out_features=10, bias=True)
 
   optimizer = torch.optim.SGD(
       net.parameters(),
