@@ -27,6 +27,7 @@ import os
 import shutil
 import time
 
+from torch.utils.tensorboard import SummaryWriter
 from models.cifar.allconv import AllConvNet
 import torchvision.models as model
 import numpy as np
@@ -142,6 +143,10 @@ CORRUPTIONS = [
     'brightness', 'contrast', 'elastic_transform', 'pixelate',
     'jpeg_compression'
 ]
+
+PERTURBATIONS = ['gaussian_noise', 'shot_noise', 'motion_blur', 'zoom_blur',
+          'spatter', 'brightness', 'translate', 'rotate', 'tilt', 'scale']
+
 
 
 def get_lr(step, total_steps, lr_max, lr_min):
@@ -286,6 +291,28 @@ def test_c(net, test_data, base_path):
 
   return np.mean(corruption_accs)
 
+def test_p(net, test_data, base_path):
+  """Evaluate network on given corrupted dataset."""
+  perturbation_accs = []
+  for perturbation in PERTURBATIONS:
+    # Reference to original data is mutated
+    test_data.data = np.load(base_path + perturbation + '.npy')
+    #test_data.targets = torch.LongTensor(np.load(base_path + 'labels.npy'))
+    test_data.targets = torch.LongTensor(np.random.randint(0, 10, (10000,)))
+
+    test_loader = torch.utils.data.DataLoader(
+        test_data,
+        batch_size=args.eval_batch_size,
+        shuffle=False,
+        num_workers=args.num_workers,
+        pin_memory=True)
+
+    test_loss, test_acc = test(net, test_loader)
+    perturbation_accs.append(test_acc)
+    print('{}\n\tTest Loss {:.3f} | Test Error {:.3f}'.format(
+        perturbation, test_loss, 100 - 100. * test_acc))
+
+  return np.mean(perturbation_accs)
 
 def main():
   torch.manual_seed(1)
@@ -306,8 +333,10 @@ def main():
     test_data = datasets.CIFAR10(
         './data/cifar', train=False, transform=test_transform, download=True)
     base_c_path = './data/cifar/CIFAR-10-C/'
+    base_p_path = './data/cifar/CIFAR-10-P/'
     num_classes = 10
-  else:
+       
+  elif args.dataset == 'cifar100':
     train_data = datasets.CIFAR100(
         './data/cifar', train=True, transform=train_transform, download=True)
     test_data = datasets.CIFAR100(
@@ -384,6 +413,11 @@ def main():
     print('Mean Corruption Error: {:.3f}'.format(100 - 100. * test_c_acc))
     return
 
+    test_p_acc = test_p(net, test_data, base_p_path)
+    print('Mean Perturbation Error: {:.3f}'.format(100 - 100. * test_p_acc))
+    return
+
+
   scheduler = torch.optim.lr_scheduler.LambdaLR(
       optimizer,
       lr_lambda=lambda step: get_lr(  # pylint: disable=g-long-lambda
@@ -443,6 +477,9 @@ def main():
 
   test_c_acc = test_c(net, test_data, base_c_path)
   print('Mean Corruption Error: {:.3f}'.format(100 - 100. * test_c_acc))
+
+  test_p_acc = test_p(net, test_data, base_p_path)
+  print('Mean Perturbation Error: {:.3f}'.format(100 - 100. * test_p_acc))
 
   with open(log_path, 'a') as f:
     f.write('%03d,%05d,%0.6f,%0.5f,%0.2f\n' %
