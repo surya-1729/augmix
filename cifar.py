@@ -28,7 +28,7 @@ import shutil
 import time
 
 from torch.utils.tensorboard import SummaryWriter
-w = SummaryWriter('logs/'+args.model)
+
 from models.cifar.allconv import AllConvNet
 import torchvision.models as model
 import numpy as np
@@ -138,14 +138,14 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+w = SummaryWriter('logs/'+args.model)
+
 CORRUPTIONS = [
     'gaussian_noise'
     ,'shot_noise', 'impulse_noise', 'defocus_blur',
     'glass_blur', 'motion_blur', 'zoom_blur', 'snow', 'frost', 'fog',
     'brightness', 'contrast', 'elastic_transform', 'pixelate',
     'jpeg_compression']
-
-
 
 
 def get_lr(step, total_steps, lr_max, lr_min):
