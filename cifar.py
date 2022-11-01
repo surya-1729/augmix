@@ -28,6 +28,7 @@ import shutil
 import time
 
 from torch.utils.tensorboard import SummaryWriter
+w = SummaryWriter('logs/'+args.model)
 from models.cifar.allconv import AllConvNet
 import torchvision.models as model
 import numpy as np
@@ -138,14 +139,12 @@ parser.add_argument(
 args = parser.parse_args()
 
 CORRUPTIONS = [
-    'gaussian_noise', 'shot_noise', 'impulse_noise', 'defocus_blur',
+    'gaussian_noise'
+    ,'shot_noise', 'impulse_noise', 'defocus_blur',
     'glass_blur', 'motion_blur', 'zoom_blur', 'snow', 'frost', 'fog',
     'brightness', 'contrast', 'elastic_transform', 'pixelate',
-    'jpeg_compression'
-]
+    'jpeg_compression']
 
-PERTURBATIONS = ['gaussian_noise', 'shot_noise', 'motion_blur', 'zoom_blur',
-          'spatter', 'brightness', 'translate', 'rotate', 'tilt', 'scale']
 
 
 
@@ -291,28 +290,7 @@ def test_c(net, test_data, base_path):
 
   return np.mean(corruption_accs)
 
-def test_p(net, test_data, base_path):
-  """Evaluate network on given corrupted dataset."""
-  perturbation_accs = []
-  for perturbation in PERTURBATIONS:
-    # Reference to original data is mutated
-    test_data.data = np.load(base_path + perturbation + '.npy')
-    #test_data.targets = torch.LongTensor(np.load(base_path + 'labels.npy'))
-    test_data.targets = torch.LongTensor(np.random.randint(0, 10, (10000,)))
 
-    test_loader = torch.utils.data.DataLoader(
-        test_data,
-        batch_size=args.eval_batch_size,
-        shuffle=False,
-        num_workers=args.num_workers,
-        pin_memory=True)
-
-    test_loss, test_acc = test(net, test_loader)
-    perturbation_accs.append(test_acc)
-    print('{}\n\tTest Loss {:.3f} | Test Error {:.3f}'.format(
-        perturbation, test_loss, 100 - 100. * test_acc))
-
-  return np.mean(perturbation_accs)
 
 def main():
   torch.manual_seed(1)
@@ -413,9 +391,6 @@ def main():
     print('Mean Corruption Error: {:.3f}'.format(100 - 100. * test_c_acc))
     return
 
-    test_p_acc = test_p(net, test_data, base_p_path)
-    print('Mean Perturbation Error: {:.3f}'.format(100 - 100. * test_p_acc))
-    return
 
 
   scheduler = torch.optim.lr_scheduler.LambdaLR(
@@ -438,6 +413,7 @@ def main():
 
   best_acc = 0
   print('Beginning training from epoch:', start_epoch + 1)
+
   for epoch in range(start_epoch, args.epochs):
     begin_time = time.time()
 
@@ -469,6 +445,9 @@ def main():
           100 - 100. * test_acc,
       ))
 
+    w.add_scalar(args.dataset+'/train_loss',train_loss_ema, epoch+1) 
+    w.add_scalar(args.dataset+'/test_loss',test_loss, epoch+1)
+    w.add_scalar(args.dataset+'/test_acc',test_acc*100, epoch+1)
     print(
         'Epoch {0:3d} | Time {1:5d} | Train Loss {2:.4f} | Test Loss {3:.3f} |'
         ' Test Error {4:.2f}'
@@ -478,8 +457,6 @@ def main():
   test_c_acc = test_c(net, test_data, base_c_path)
   print('Mean Corruption Error: {:.3f}'.format(100 - 100. * test_c_acc))
 
-  test_p_acc = test_p(net, test_data, base_p_path)
-  print('Mean Perturbation Error: {:.3f}'.format(100 - 100. * test_p_acc))
 
   with open(log_path, 'a') as f:
     f.write('%03d,%05d,%0.6f,%0.5f,%0.2f\n' %
