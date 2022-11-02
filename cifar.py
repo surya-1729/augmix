@@ -445,9 +445,10 @@ def main():
           100 - 100. * test_acc,
       ))
 
-    w.add_scalar(args.dataset+'/train_loss',train_loss_ema, epoch+1) 
+    w.add_scalar(args.dataset+'/train_loss',train_loss_ema, epoch+1)
     w.add_scalar(args.dataset+'/test_loss',test_loss, epoch+1)
     w.add_scalar(args.dataset+'/test_acc',test_acc*100, epoch+1)
+ 
     print(
         'Epoch {0:3d} | Time {1:5d} | Train Loss {2:.4f} | Test Loss {3:.3f} |'
         ' Test Error {4:.2f}'
@@ -457,6 +458,8 @@ def main():
   test_c_acc = test_c(net, test_data, base_c_path)
   print('Mean Corruption Error: {:.3f}'.format(100 - 100. * test_c_acc))
 
+
+  w.close()
 
   with open(log_path, 'a') as f:
     f.write('%03d,%05d,%0.6f,%0.5f,%0.2f\n' %
