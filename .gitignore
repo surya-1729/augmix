@@ -6,3 +6,12 @@
 /third_party/__pycache__/
 /__pycache__/
 asho
+snapshots/checkpoint.pth.tar
+snapshots/cifar10_convnext_tiny_notpretrained_training_log.csv
+snapshots/cifar10_convnext_tiny_pretrained_training_log.csv
+snapshots/cifar10_densenet_training_log.csv
+snapshots/cifar10_resnet18_notpretrained_training_log.csv
+snapshots/cifar10_resnet18_pretrained_training_log.csv
+snapshots/cifar10_resnet18_training_log.csv
+snapshots/cifar10_wrn_training_log.csv
+snapshots/model_best.pth.tar
